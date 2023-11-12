@@ -348,7 +348,7 @@ body {
 }
 
 .ticketCard-region,
-.ticketCard-rank {
+.ticketCard-rate {
   position: absolute;
   border-radius: 0 5px 5px 0px;
   color: #fff;
@@ -363,7 +363,7 @@ body {
   padding: 12px 20px;
 }
 
-.ticketCard-rank {
+.ticketCard-rate {
   bottom: -16px;
   left: 0;
   background-color: #00807e;

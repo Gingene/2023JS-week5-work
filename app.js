@@ -1,53 +1,28 @@
 // https://github.com/hexschool/js-training/blob/main/travelApi.json
+const url =
+  "https://raw.githubusercontent.com/hexschool/js-training/main/travelApi.json";
 
-let data = [
-  {
-    id: 0,
-    name: "肥宅心碎賞櫻3日",
-    imgUrl:
-      "https://images.unsplash.com/photo-1522383225653-ed111181a951?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1655&q=80",
-    area: "高雄",
-    description: "賞櫻花最佳去處。肥宅不得不去的超讚景點！",
-    group: 87,
-    price: 1400,
-    rank: 10,
-  },
-  {
-    id: 1,
-    name: "貓空纜車雙程票",
-    imgUrl:
-      "https://images.unsplash.com/photo-1501393152198-34b240415948?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
-    area: "台北",
-    description:
-      "乘坐以透明強化玻璃為地板的「貓纜之眼」水晶車廂，享受騰雲駕霧遨遊天際之感",
-    group: 99,
-    price: 240,
-    rank: 2,
-  },
-  {
-    id: 2,
-    name: "台中谷關溫泉會1日",
-    imgUrl:
-      "https://images.unsplash.com/photo-1535530992830-e25d07cfa780?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1650&q=80",
-    area: "台北",
-    description:
-      "全館客房均提供谷關無色無味之優質碳酸原湯，並取用八仙山之山冷泉供蒞臨貴賓沐浴及飲水使用。",
-    group: 20,
-    price: 1765,
-    rank: 7,
-  },
-];
+let data = [];
 
 const form = document.querySelector(".addTicket-form");
-const ticketRegion = document.querySelector("#ticketRegion");
-const ticketDescription = document.querySelector("#ticketDescription");
 const searchAreaSelect = document.querySelector("#search-area-select");
 const searchResultText = document.querySelector("#searchResult-text");
-const inputs = document.querySelectorAll("input");
-const warnings = document.querySelectorAll(".fa-exclamation-circle + span");
-
+const inputs = document.querySelectorAll(
+  "input, #ticketDescription, #ticketRegion"
+);
 const ticketCardArea = document.querySelector(".ticketCard-area");
 const cantFindFrea = document.querySelector(".cantFind-area");
+
+// console.log(inputs);
+
+function getData() {
+  axios.get(url).then((res) => {
+    // console.log(res);
+    data = res.data.data;
+    rendnerDom(data);
+  });
+}
+getData();
 
 const tempTicketInfo = {};
 
@@ -58,16 +33,29 @@ const ticketProxy = new Proxy(tempTicketInfo, {
   },
   set(target, prop, value) {
     if (value.trim() === "") {
-      alert(`輸入不能為空白請重新輸入`);
       return;
     }
     if (prop === "imgUrl") {
-      const regex =
-        /^(https?):\/\/([\da-z\.\-]+)\.([a-z\.]{2,6})([\/\w\.\-]*)*\/?(.)*/g;
-      if (!regex.test(value)) {
-        alert(`輸入網址格式有問題請再確認一次`);
-        return;
-      }
+      return new Promise((resolve, reject) => {
+        const handleImgUrl = async (imgurl) => {
+          try {
+            const res = await checkImgURL(imgurl);
+            console.log("圖片OK");
+            resolve(Reflect.set(target, prop, value.trim()));
+          } catch (err) {
+            alert("圖片似乎不存在");
+            reject("Invalid Image");
+          }
+        };
+        handleImgUrl(value);
+      });
+      // 當屬性為imgUrl檢查圖片是否存在，放棄原本的正規表達是因為圖片原因寫的規則沒辦法很好的匹配圖片網址，此寫法直接參考網路的作法
+      // const regex =
+      //   /^(https?):\/\/([\da-z\.\-]+)\.([a-z\.]{2,6})([\/\w\.\-]*)*\/?(.)*/g;
+      // if (!regex.test(value)) {
+      //   alert(`輸入網址格式有問題請再確認一次`);
+      //   return;
+      // }
     }
     console.log(`新增一個屬性${prop}, 值為${value.trim()}`);
     return Reflect.set(target, prop, value.trim());
@@ -91,7 +79,7 @@ function rendnerDom(array) {
                     />
                 </a>
                 <div class="ticketCard-region">${item.area}</div>
-                <div class="ticketCard-rank">${item.rank}</div>
+                <div class="ticketCard-rate">${item.rate}</div>
             </div>
             <div class="ticketCard-content">
                 <div>
@@ -121,10 +109,9 @@ function rendnerDom(array) {
   searchResultText.textContent = `本次搜尋共 ${data.length} 筆資料`;
 }
 
-if (localStorage.getItem("data")) {
-  data = JSON.parse(localStorage.getItem("data"));
-}
-rendnerDom(data);
+// if (localStorage.getItem("data")) {
+//   data = JSON.parse(localStorage.getItem("data"));
+// }
 
 function reRedner(item) {
   const fragment = document.createDocumentFragment();
@@ -138,7 +125,7 @@ function reRedner(item) {
                       />
                   </a>
                   <div class="ticketCard-region">${item.area}</div>
-                  <div class="ticketCard-rank">${item.rank}</div>
+                  <div class="ticketCard-rate">${item.rate}</div>
               </div>
               <div class="ticketCard-content">
                   <div>
@@ -161,24 +148,20 @@ function reRedner(item) {
               </div>`;
   const cardClass = ["ticketCard", "card-fadeUp"];
   li.classList.add(...cardClass);
+  li.setAttribute("id", item.id);
   fragment.append(li);
   ticketCardArea.append(fragment);
 }
 
 function eventListener(event, element) {
   element.addEventListener(event, (e) => {
-    const i =
-      e.target.parentElement.parentElement.childNodes[3].childNodes[1]
-        .childNodes[1];
-    const span =
-      e.target.parentElement.parentElement.childNodes[3].childNodes[1]
-        .childNodes[3];
+    const p = e.target.parentElement.nextElementSibling.childNodes[1];
     if (e.target.value.trim() !== "") {
-      i.classList.add("warning-none");
-      span.classList.add("warning-none");
+      p.childNodes[1].classList.add("warning-none");
+      p.childNodes[3].classList.add("warning-none");
     } else {
-      i.classList.remove("warning-none");
-      span.classList.remove("warning-none");
+      p.childNodes[1].classList.remove("warning-none");
+      p.childNodes[3].classList.remove("warning-none");
     }
     ticketProxy[e.target.dataset.prop] = e.target.value;
   });
@@ -187,8 +170,6 @@ function eventListener(event, element) {
 inputs.forEach((element) => {
   eventListener("change", element);
 });
-eventListener("change", ticketRegion);
-eventListener("change", ticketDescription);
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -204,8 +185,12 @@ form.addEventListener("submit", (e) => {
   }
   ticketProxy.id = Date.now() + Math.random().toString(16);
   data.push(JSON.parse(JSON.stringify(tempTicketInfo)));
-  localStorage.setItem("data", JSON.stringify(data));
+  // localStorage.setItem("data", JSON.stringify(data));
   reRedner(data[data.length - 1]);
+  document
+    .getElementById(ticketProxy.id)
+    .scrollIntoView({ behavior: "smooth" });
+  // element.scrollIntoViewIfNeeded() // scrollIntoView()的變體
   searchResultText.textContent = `本次搜尋共 ${data.length} 筆資料`;
   for (let key in ticketProxy) {
     delete ticketProxy[key];
@@ -237,3 +222,16 @@ searchAreaSelect.addEventListener("change", (e) => {
     searchResultText.textContent = `本次搜尋共 ${result.length} 筆資料`;
   });
 });
+
+function checkImgURL(imgurl) {
+  return new Promise((resolve, reject) => {
+    const imgObj = new Image();
+    imgObj.src = imgurl;
+    imgObj.onload = (res) => {
+      resolve(res);
+    };
+    imgObj.onerror = (err) => {
+      reject(err);
+    };
+  });
+}
