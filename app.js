@@ -158,11 +158,9 @@ function eventListener(event, element) {
   element.addEventListener(event, (e) => {
     const p = e.target.parentElement.nextElementSibling.childNodes[1];
     if (e.target.value.trim() !== "") {
-      p.childNodes[1].classList.add("warning-none");
-      p.childNodes[3].classList.add("warning-none");
+      p.classList.add("warning-none");
     } else {
-      p.childNodes[1].classList.remove("warning-none");
-      p.childNodes[3].classList.remove("warning-none");
+      p.classList.remove("warning-none");
     }
     ticketProxy[e.target.dataset.prop] = e.target.value;
   });
