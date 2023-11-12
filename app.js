@@ -93,15 +93,16 @@ function rendnerDom(array) {
                 <div class="ticketCard-info">
                     <p class="ticketCard-num">
                         <span><i class="fas fa-exclamation-circle"></i></span>
-                        剩下最後 <span id="ticketCard-num"> ${item.group} </span> 組
+                        剩下最後 <span id="ticketCard-num-${item.id}"> ${item.group} </span> 組
                     </p>
                     <p class="ticketCard-price">
-                        TWD <span id="ticketCard-price">$${item.price}</span>
+                        TWD <span id="ticketCard-price-${item.id}">$${item.price}</span>
                     </p>
                 </div>
             </div>`;
     const cardClass = ["ticketCard", "card-fadeUp"];
     li.classList.add(...cardClass);
+    li.setAttribute("id", item.id);
     fragment.append(li);
   });
   ticketCardArea.innerHTML = "";
@@ -139,10 +140,10 @@ function reRedner(item) {
                   <div class="ticketCard-info">
                       <p class="ticketCard-num">
                           <span><i class="fas fa-exclamation-circle"></i></span>
-                          剩下最後 <span id="ticketCard-num"> ${item.group} </span> 組
+                          剩下最後 <span id="ticketCard-num-${item.id}"> ${item.group} </span> 組
                       </p>
                       <p class="ticketCard-price">
-                          TWD <span id="ticketCard-price">$${item.price}</span>
+                          TWD <span id="ticketCard-price-${item.id}">$${item.price}</span>
                       </p>
                   </div>
               </div>`;
