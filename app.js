@@ -185,11 +185,12 @@ form.addEventListener("submit", (e) => {
   ticketProxy.id = Date.now() + Math.random().toString(16);
   data.push(JSON.parse(JSON.stringify(tempTicketInfo)));
   // localStorage.setItem("data", JSON.stringify(data));
-  reRedner(data[data.length - 1]);
-  document
-    .getElementById(ticketProxy.id)
-    .scrollIntoView({ behavior: "smooth" });
+  rendnerDom(data);
+  // document
+  //   .getElementById(ticketProxy.id)
+  //   .scrollIntoView({ behavior: "smooth" });
   // element.scrollIntoViewIfNeeded() // scrollIntoView()的變體
+  searchAreaSelect.value = "all";
   searchResultText.textContent = `本次搜尋共 ${data.length} 筆資料`;
   for (let key in ticketProxy) {
     delete ticketProxy[key];
