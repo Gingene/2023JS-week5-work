@@ -1,5 +1,7 @@
 // https://github.com/hexschool/js-training/blob/main/travelApi.json
-const url =
+const url1 =
+  "https://raw.githubusercontent.com/hexschool/js-training/main/travelAPI-lv1.json";
+const url2 =
   "https://raw.githubusercontent.com/hexschool/js-training/main/travelApi.json";
 
 let data = [];
@@ -16,8 +18,8 @@ const cantFindFrea = document.querySelector(".cantFind-area");
 // console.log(inputs);
 
 function getData() {
-  axios.get(url).then((res) => {
-    // console.log(res);
+  axios.get(url2).then((res) => {
+    console.log(res);
     data = res.data.data;
     rendnerDom(data);
   });
@@ -105,54 +107,16 @@ function rendnerDom(array) {
     li.setAttribute("id", item.id);
     fragment.append(li);
   });
-  ticketCardArea.innerHTML = "";
+  while (ticketCardArea.firstChild) {
+    ticketCardArea.removeChild(ticketCardArea.firstChild);
+  }
   ticketCardArea.append(fragment);
-  searchResultText.textContent = `本次搜尋共 ${data.length} 筆資料`;
+  searchResultText.textContent = `本次搜尋共 ${array.length} 筆資料`;
 }
 
 // if (localStorage.getItem("data")) {
 //   data = JSON.parse(localStorage.getItem("data"));
 // }
-
-function reRedner(item) {
-  const fragment = document.createDocumentFragment();
-  const li = document.createElement("li");
-  li.innerHTML += `
-              <div class="ticketCard-img">
-                  <a href="#">
-                      <img
-                          src="${item.imgUrl}"
-                          alt="${item.name}"
-                      />
-                  </a>
-                  <div class="ticketCard-region">${item.area}</div>
-                  <div class="ticketCard-rate">${item.rate}</div>
-              </div>
-              <div class="ticketCard-content">
-                  <div>
-                      <h3>
-                          <a href="#" class="ticketCard-name">${item.name}</a>
-                      </h3>
-                      <p class="ticketCard-description">
-                          ${item.description}
-                      </p>
-                  </div>
-                  <div class="ticketCard-info">
-                      <p class="ticketCard-num">
-                          <span><i class="fas fa-exclamation-circle"></i></span>
-                          剩下最後 <span id="ticketCard-num-${item.id}"> ${item.group} </span> 組
-                      </p>
-                      <p class="ticketCard-price">
-                          TWD <span id="ticketCard-price-${item.id}">$${item.price}</span>
-                      </p>
-                  </div>
-              </div>`;
-  const cardClass = ["ticketCard", "card-fadeUp"];
-  li.classList.add(...cardClass);
-  li.setAttribute("id", item.id);
-  fragment.append(li);
-  ticketCardArea.append(fragment);
-}
 
 function eventListener(event, element) {
   element.addEventListener(event, (e) => {
@@ -216,11 +180,7 @@ searchAreaSelect.addEventListener("change", (e) => {
     searchResultText.textContent = `本次搜尋共 ${result.length} 筆資料`;
   }
 
-  ticketCardArea.innerHTML = "";
-  result.forEach((item) => {
-    reRedner(item);
-    searchResultText.textContent = `本次搜尋共 ${result.length} 筆資料`;
-  });
+  rendnerDom(result);
 });
 
 function checkImgURL(imgurl) {
