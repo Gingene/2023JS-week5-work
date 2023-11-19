@@ -18,11 +18,17 @@ const cantFindFrea = document.querySelector(".cantFind-area");
 // console.log(inputs);
 
 function getData() {
-  axios.get(url2).then((res) => {
-    console.log(res);
-    data = res.data.data;
-    rendnerDom(data);
-  });
+  axios
+    .get(url2)
+    .then((res) => {
+      console.log(res);
+      data = res.data.data;
+      rendnerDom(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      cantFindFrea.classList.add("d-none");
+    });
 }
 getData();
 
